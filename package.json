@@ -1,0 +1,27 @@
+{
+  "name": "auto-message",
+  "version": "1.0.0",
+  "description": "automated web-scrapping, excel and whatsapp sending bot",
+  "main": "index.js",
+  "scripts": {
+    "scrapper": "node web-scrapper.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/occasum13/auto-message.git"
+  },
+  "author": "J.G",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/occasum13/auto-message/issues"
+  },
+  "homepage": "https://github.com/occasum13/auto-message#readme",
+  "devDependencies": {
+    "csv": "^6.3.6",
+    "cypress": "^13.6.4",
+    "dotenv": "^16.4.4",
+    "exceljs": "^4.4.0",
+    "puppeteer": "^22.0.0",
+    "requests": "^0.3.0"
+  }
+}
