@@ -1,7 +1,7 @@
 {
   "name": "auto-message",
   "version": "1.0.0",
-  "description": "automated web-scrapping, excel and whatsapp sending bot",
+  "description": "automated web-scrapping, excel maker and updater",
   "main": "index.js",
   "scripts": {
     "scrapper": "npx cypress run --spec cypress/e2e/web-scrapper.cy.js && node createExcel.js",
@@ -20,7 +20,6 @@
     "dotenv": "^16.4.4",
     "exceljs": "^4.4.0",
     "fs": "^0.0.1-security",
-    "gsheet": "^1.0.0",
     "request": "^2.88.2",
     "xlsx": "^0.18.5"
   }

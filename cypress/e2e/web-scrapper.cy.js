@@ -1,8 +1,8 @@
 /// <reference types="cypress" />
-
 require('dotenv').config()
 
 describe('scrap data', () => {
+
   const baseUrl = Cypress.config('baseUrl')
   const email = Cypress.config('email')
   const password = Cypress.config('password')
@@ -36,29 +36,30 @@ describe('scrap data', () => {
   ],]
 
   context('login, scrap and save excel file', () => {  
+
     it.skip('process', () => {
+
       cy.on('uncaught:exception', () => {
         return false
       })
+
       // Visits the website and login
       cy.visit(baseUrl);
       cy.get('#email').type(email);
       cy.get('#senha').type(password);
       cy.get('.cv-btn-block.-primario.-big.-full.m-t-10.--btn-acessar').contains('Acessar').click()
-      cy.wait(3000)
+
       // Go to leads page and setup search
       cy.visit(`${baseUrl}/comercial/leads`);
-      cy.wait(3000)
+      cy.wait(5000)
       cy.get('#botaoBuscaListagem').click();
       cy.get('input[type="checkbox"][name="q[999|idsituacao][]"][value="2"]').click();
       cy.get('button').contains('Buscar').click();
       cy.wait(2000)
 
-      // \/ incorreto, sem interação para teste pois há contatos válidos
-      cy.get('#quantidadeSemInteracao').click();
+      // cy.get('#quantidadeSemInteracao').click();
 
-      // \/ correto para com reserva
-      // cy.get('#quantidadeComReserva').click();
+      cy.get('#quantidadeComReserva').click();
 
       cy.get('#listagem_informacoes > strong:nth-child(1)').then($el => {
         // Get the text content of the element
@@ -109,7 +110,7 @@ describe('scrap data', () => {
         const timeDate = new Date();
         const hours = timeDate.getHours()
         let greetings = "";
-        hours > 12 ? greetings = 'boa tarde!' : greetings = 'bom dia !'
+        hours > 12 ? greetings = 'boa tarde !' : greetings = 'bom dia !'
 
         const dataArray = [[ 
             'You Paraíso',
@@ -141,25 +142,24 @@ describe('scrap data', () => {
         allResults = allResults.concat(dataArray); 
         cy.writeFile('./cypress/fixtures/extracted_data.txt', JSON.stringify(allResults), { encoding: 'utf8' })
       }) 
-      console.log(allResults)   
     });
   })
 
   context('update leads', () => {
 
     it('process', () => {
+
       cy.on('uncaught:exception', () => {
         return false
       })
+
       // Visits the website and login
       cy.visit(baseUrl);
       cy.get('#email').type(email);
       cy.get('#senha').type(password);
       cy.get('.cv-btn-block.-primario.-big.-full.m-t-10.--btn-acessar').contains('Acessar').click()
       cy.wait(3000)
-      cy.on('uncaught:exception', () => {
-        return false
-      })
+
       // Iterates through the .txt to find leadNumbers registered and updates the leads
       cy.fixture('extracted_data.txt').then(allResults => {
         let arrayData = JSON.parse(allResults)
@@ -169,10 +169,8 @@ describe('scrap data', () => {
           const message = innerArray[9] || ''; 
           
           if (Number(leadNumber) !== NaN) {
-            console.log(leadNumber)
             cy.wait(2000)
             cy.visit(`${baseUrl}/comercial/leads/${leadNumber}/administrar?lido=true`);
-            511442
             cy.wait(5000)
             cy.get('.ajust-lista-acoes > li:nth-child(1) > a:nth-child(1) > i:nth-child(1)').should('be.visible').click();
             cy.get('#formularioPrincipalAnatocao > fieldset:nth-child(6) > div:nth-child(1) > div:nth-child(2) > textarea:nth-child(1)').type(message);

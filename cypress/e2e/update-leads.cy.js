@@ -1,8 +1,8 @@
 /// <reference types="cypress" />
-
 require('dotenv').config()
 
 describe('update leads', () => {
+
   const baseUrl = Cypress.config('baseUrl')
   const email = Cypress.config('email')
   const password = Cypress.config('password')
@@ -10,28 +10,26 @@ describe('update leads', () => {
   context('update leads', () => {
 
     it('process', () => {
+
       cy.on('uncaught:exception', () => {
         return false
       })
+
       // Visits the website and login
       cy.visit(baseUrl);
       cy.get('#email').type(email);
       cy.get('#senha').type(password);
       cy.get('.cv-btn-block.-primario.-big.-full.m-t-10.--btn-acessar').contains('Acessar').click()
-      cy.wait(3000)
-      cy.on('uncaught:exception', () => {
-        return false
-      })
+
       // Iterates through the .txt to find leadNumbers registered and updates the leads
       cy.fixture('transformed_data.txt').then(allResults => {
         let arrayData = JSON.parse(allResults)
         
-        cy.get(arrayData.slice(2)).each((innerArray) => {
+        cy.get(arrayData.slice(1)).each((innerArray) => {
           const leadNumber = innerArray[2] || '';
           const message = innerArray[9] || ''; 
           
           if (Number(leadNumber) !== NaN) {
-            console.log(leadNumber)
             cy.wait(2000)
             cy.visit(`${baseUrl}/comercial/leads/${leadNumber}/administrar?lido=true`);
             511442
