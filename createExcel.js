@@ -2,7 +2,7 @@ const fs = require('fs');
 const XLSX = require('xlsx');
 
 // Read the TXT file
-fs.readFile('extracted_data.txt', 'utf8', (err, data) => {
+fs.readFile('./cypress/fixtures/extracted_data.txt', 'utf8', (err, data) => {
   if (err) {
     console.error(err);
     return;

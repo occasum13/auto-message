@@ -7,23 +7,58 @@ describe('scrap data', () => {
   const email = Cypress.config('email')
   const password = Cypress.config('password')
 
-  context('login and setup', () => {  
-    it('access the login page and login', () => {
+  // Setting xlsx headers
+  let allResults = [[
+    'Origem',
+    'Campanha',
+    'Número do Lead',
+    'E-MAIL',
+    'NOME',
+    'Sobrenome',
+    'TELEFONE',
+    'Moradia/Invest.',
+    'Ticket Médio',
+    'Mensagem Padrão',
+    'Enviar Primeiro Contato',
+    'Corretor',
+    'Mensagem',
+    'Data 1',
+    'Status 1',
+    'Cont. 1',
+    'Data 2',
+    'Cont. 2',
+    'Contato 2',
+    'Status 2',
+    'Data 3',
+    'Cont. 3',
+    'Status 3',
+    'Classificação',
+  ],]
+
+  context('login, scrap and save excel file', () => {  
+    it.skip('process', () => {
       cy.on('uncaught:exception', () => {
         return false
       })
+      // Visits the website and login
       cy.visit(baseUrl);
       cy.get('#email').type(email);
       cy.get('#senha').type(password);
       cy.get('.cv-btn-block.-primario.-big.-full.m-t-10.--btn-acessar').contains('Acessar').click()
       cy.wait(3000)
+      // Go to leads page and setup search
       cy.visit(`${baseUrl}/comercial/leads`);
       cy.wait(3000)
       cy.get('#botaoBuscaListagem').click();
       cy.get('input[type="checkbox"][name="q[999|idsituacao][]"][value="2"]').click();
       cy.get('button').contains('Buscar').click();
       cy.wait(2000)
+
+      // \/ incorreto, sem interação para teste pois há contatos válidos
       cy.get('#quantidadeSemInteracao').click();
+
+      // \/ correto para com reserva
+      // cy.get('#quantidadeComReserva').click();
 
       cy.get('#listagem_informacoes > strong:nth-child(1)').then($el => {
         // Get the text content of the element
@@ -34,38 +69,12 @@ describe('scrap data', () => {
         cy.get('#formQtd > a').click();
       });
 
-      let allResults = [[
-        'Origem',
-        'Campanha',
-        'Número do Lead',
-        'E-MAIL',
-        'NOME',
-        'Sobrenome',
-        'TELEFONE',
-        'Moradia/Invest.',
-        'Ticket Médio',
-        'Mensagem Padrão',
-        'Enviar Primeiro Contato',
-        'Corretor',
-        'Mensagem',
-        'Data 1',
-        'Status 1',
-        'Cont. 1',
-        'Data 2',
-        'Cont. 2',
-        'Contato 2',
-        'Status 2',
-        'Data 3',
-        'Cont. 3',
-        'Status 3',
-        'Classificação',
-      ],]
-
       cy.get('#tabelaListagem > div.table-overflow.table-1000 > table > tbody tr').each((row) => {
         // Get the name element and extract it as before
         const nameElement = row.find('td:nth-child(2) > div > span > b > span')
         const nameText = nameElement.text().trim()
 
+        // Separetes the first word as firstName and the last word as lastName
         const words = nameText.split(' ')
         const firstName = words[0]
         const lastName = words.length > 1 ? words[words.length - 1] : ''
@@ -83,6 +92,7 @@ describe('scrap data', () => {
         const investmentElement = row.find('td:nth-child(4) > div:nth-child(2)');
         let investmentText = investmentElement.text().trim();
 
+        // Remove subsequents strings after the first investment by - and , and makes the remaining investment as the first letter uppercase and the rest lowercase
         let investmentSplitter = investmentText.split('-')
         let investmentSplitter2 = investmentSplitter[0].split(',') || []; // Use an empty array if undefined
         let firstInvestment = investmentSplitter2[0] ? investmentSplitter2[0].toLowerCase() : investmentSplitter; // Use an empty string if undefined
@@ -94,6 +104,8 @@ describe('scrap data', () => {
         const leadNumberElement = row.find('td:nth-child(2) > div > div > span')
         const leadNumberText = leadNumberElement.text().trim()
 
+
+        // Get time in order to make a personalized greeting depending on hour
         const timeDate = new Date();
         const hours = timeDate.getHours()
         let greetings = "";
@@ -124,12 +136,52 @@ describe('scrap data', () => {
             'WP',
             'Proposta enviada',
             'Frio'
-          ],];
-           
+        ],];
+
         allResults = allResults.concat(dataArray); 
-        cy.writeFile('extracted_data.txt', JSON.stringify(allResults), { encoding: 'utf8' })
+        cy.writeFile('./cypress/fixtures/extracted_data.txt', JSON.stringify(allResults), { encoding: 'utf8' })
       }) 
       console.log(allResults)   
     });
+  })
+
+  context('update leads', () => {
+
+    it('process', () => {
+      cy.on('uncaught:exception', () => {
+        return false
+      })
+      // Visits the website and login
+      cy.visit(baseUrl);
+      cy.get('#email').type(email);
+      cy.get('#senha').type(password);
+      cy.get('.cv-btn-block.-primario.-big.-full.m-t-10.--btn-acessar').contains('Acessar').click()
+      cy.wait(3000)
+      cy.on('uncaught:exception', () => {
+        return false
+      })
+      // Iterates through the .txt to find leadNumbers registered and updates the leads
+      cy.fixture('extracted_data.txt').then(allResults => {
+        let arrayData = JSON.parse(allResults)
+        
+        cy.get(arrayData.slice(2)).each((innerArray) => {
+          const leadNumber = innerArray[2] || '';
+          const message = innerArray[9] || ''; 
+          
+          if (Number(leadNumber) !== NaN) {
+            console.log(leadNumber)
+            cy.wait(2000)
+            cy.visit(`${baseUrl}/comercial/leads/${leadNumber}/administrar?lido=true`);
+            511442
+            cy.wait(5000)
+            cy.get('.ajust-lista-acoes > li:nth-child(1) > a:nth-child(1) > i:nth-child(1)').should('be.visible').click();
+            cy.get('#formularioPrincipalAnatocao > fieldset:nth-child(6) > div:nth-child(1) > div:nth-child(2) > textarea:nth-child(1)').type(message);
+            cy.get('#salvarAnotacao').click()
+            const situationLeadButton = "#/34"
+            cy.get(situationLeadButton).click()
+          }
+        });
+      });
+    })
   })
 })

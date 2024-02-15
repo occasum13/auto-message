@@ -4,7 +4,8 @@
   "description": "automated web-scrapping, excel and whatsapp sending bot",
   "main": "index.js",
   "scripts": {
-    "scrapper": "npx cypress run && node createExcel.js"
+    "scrapper": "npx cypress run --spec cypress/e2e/web-scrapper.cy.js && node createExcel.js",
+    "updater": "node transformExcel.js && npx cypress run --spec cypress/e2e/update-leads.cy.js"
   },
   "license": "ISC",
   "bugs": {
