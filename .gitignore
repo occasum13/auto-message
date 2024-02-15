@@ -1,2 +1,4 @@
 node_modules
 .env
+extracted_data.txt
+extracted_data.xlsx

@@ -4,13 +4,8 @@
   "description": "automated web-scrapping, excel and whatsapp sending bot",
   "main": "index.js",
   "scripts": {
-    "scrapper": "node web-scrapper.js"
+    "scrapper": "npx cypress run && node createExcel.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/occasum13/auto-message.git"
-  },
-  "author": "J.G",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/occasum13/auto-message/issues"
@@ -22,6 +17,10 @@
     "@babel/register": "^7.23.7",
     "cypress": "^13.6.4",
     "dotenv": "^16.4.4",
-    "exceljs": "^4.4.0"
+    "exceljs": "^4.4.0",
+    "fs": "^0.0.1-security",
+    "gsheet": "^1.0.0",
+    "request": "^2.88.2",
+    "xlsx": "^0.18.5"
   }
 }

@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+
 require('dotenv').config()
 
 describe('scrap data', () => {
@@ -33,37 +34,72 @@ describe('scrap data', () => {
         cy.get('#formQtd > a').click();
       });
 
-      let updatedAllData = [];
+      let allResults = [[
+        'Origem',
+        'Campanha',
+        'Número do Lead',
+        'E-MAIL',
+        'NOME',
+        'Sobrenome',
+        'TELEFONE',
+        'Moradia/Invest.',
+        'Ticket Médio',
+        'Mensagem Padrão',
+        'Enviar Primeiro Contato',
+        'Corretor',
+        'Mensagem',
+        'Data 1',
+        'Status 1',
+        'Cont. 1',
+        'Data 2',
+        'Cont. 2',
+        'Contato 2',
+        'Status 2',
+        'Data 3',
+        'Cont. 3',
+        'Status 3',
+        'Classificação',
+      ],]
 
       cy.get('#tabelaListagem > div.table-overflow.table-1000 > table > tbody tr').each((row) => {
-          // Get the name element and extract it as before
-          const nameElement = row.find('td:nth-child(2) > div > span > b > span');
-          const nameText = nameElement.text().trim();
+        // Get the name element and extract it as before
+        const nameElement = row.find('td:nth-child(2) > div > span > b > span')
+        const nameText = nameElement.text().trim()
 
-          const words = nameText.split(' ');
-          const firstName = words[0];
-          const lastName = words.length > 1 ? words[words.length - 1] : '';
+        const words = nameText.split(' ')
+        const firstName = words[0]
+        const lastName = words.length > 1 ? words[words.length - 1] : ''
 
-          // Get the email element
-          const emailElement = row.find('td:nth-child(2) > div > span > div.lighter.abrevia.hidden-text-blur');
-          const emailText = emailElement.text().trim();
+        // Get the email element
+        const emailElement = row.find('td:nth-child(2) > div > span > div.lighter.abrevia.hidden-text-blur')
+        const emailText = emailElement.text().trim()
 
-          // Get the phone number element (assuming it's within the 3rd child div)
-          const phoneElement = row.find('td:nth-child(2) > div > span > div:nth-child(3) > span > span.hidden-text-blur.-zap');
-          const phoneText = phoneElement.text().trim();
-          const contactNumberText = phoneText.slice(1)
+        // Get the phone number element (assuming it's within the 3rd child div)
+        const phoneElement = row.find('td:nth-child(2) > div > span > div:nth-child(3) > span > span.hidden-text-blur.-zap')
+        const phoneText = phoneElement.text().trim()
+        const contactNumberText = phoneText.slice(1)
 
-          // Get the investment value element (assuming it's within the 4th td)
-          const investmentElement = row.find('td:nth-child(4) > div:nth-child(2)');
-          const investmentText = investmentElement.text().trim();
-          const investmentSplitter = investmentText.split('-')
-          const firstInvestment = investmentSplitter[0]
+        // Get the investment value element (assuming it's within the 4th td)
+        const investmentElement = row.find('td:nth-child(4) > div:nth-child(2)');
+        let investmentText = investmentElement.text().trim();
 
-          // Get the lead number element
-          const leadNumberElement = row.find('td:nth-child(2) > div > div > span');
-          const leadNumberText = leadNumberElement.text().trim();
+        let investmentSplitter = investmentText.split('-')
+        let investmentSplitter2 = investmentSplitter[0].split(',') || []; // Use an empty array if undefined
+        let firstInvestment = investmentSplitter2[0] ? investmentSplitter2[0].toLowerCase() : investmentSplitter; // Use an empty string if undefined
+        
+        firstInvestment = firstInvestment[0].toUpperCase() + firstInvestment.slice(1)
 
-          const dataArray = [
+        
+        // Get the lead number element
+        const leadNumberElement = row.find('td:nth-child(2) > div > div > span')
+        const leadNumberText = leadNumberElement.text().trim()
+
+        const timeDate = new Date();
+        const hours = timeDate.getHours()
+        let greetings = "";
+        hours > 12 ? greetings = 'boa tarde!' : greetings = 'bom dia !'
+
+        const dataArray = [[ 
             'You Paraíso',
             firstInvestment,
             leadNumberText,
@@ -71,10 +107,11 @@ describe('scrap data', () => {
             firstName,
             lastName,
             contactNumberText,
-            'Moradia',
+            '',
             '0',
-            '="Olá "&E2&", boa tarde! Tudo bem? Sou Renan Ortiz, head de investimentos da Vitacon. Validei que você já investiu conosco no "&B2&", gostaria de te apresentar nossos produtos do Private em que você investe a preço de custo comprando antes do lançamento e consegue uma valorização de 70%, gostaria de receber mais informações?"',
-            '=HYPERLINK("https://api.whatsapp.com/send?phone=55"&G2&"&text="&J2&"";"Enviar mensagem")',
+            `"Olá ${firstName}, ${greetings} Tudo bem? Sou Renan Ortiz, head de investimentos da Vitacon. Validei que você já investiu conosco no ${firstInvestment}, gostaria de te apresentar nossos produtos do Private em que você investe a preço de custo comprando antes do lançamento e consegue uma valorização de 70%, gostaria de receber mais informações?"`,
+            `=HYPERLINK("https://api.whatsapp.com/send?phone=${contactNumberText}&text="&J2&"";"Enviar mensagem")`,
+            '',
             '',
             '',
             '',
@@ -84,16 +121,15 @@ describe('scrap data', () => {
             '',
             '',
             '',
-            '',
             'WP',
             'Proposta enviada',
             'Frio'
-          ];
-          console.log('Extracted data for row:', dataArray)
-
-          updatedAllData = updatedAllData.concat(dataArray)
-      }).then(      
-        cy.task('createExcel', { dataArray: updatedAllData, filename: 'combined_data.xlsx' }).then(console.log(updatedAllData)))
+          ],];
+           
+        allResults = allResults.concat(dataArray); 
+        cy.writeFile('extracted_data.txt', JSON.stringify(allResults), { encoding: 'utf8' })
+      }) 
+      console.log(allResults)   
     });
   })
 })
