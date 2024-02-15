@@ -17,11 +17,11 @@
   },
   "homepage": "https://github.com/occasum13/auto-message#readme",
   "devDependencies": {
-    "csv": "^6.3.6",
+    "@babel/core": "^7.23.9",
+    "@babel/preset-env": "^7.23.9",
+    "@babel/register": "^7.23.7",
     "cypress": "^13.6.4",
     "dotenv": "^16.4.4",
-    "exceljs": "^4.4.0",
-    "puppeteer": "^22.0.0",
-    "requests": "^0.3.0"
+    "exceljs": "^4.4.0"
   }
 }
