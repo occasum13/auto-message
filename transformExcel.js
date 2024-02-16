@@ -5,7 +5,7 @@ const XLSX = require('xlsx');
 const workbook = XLSX.readFile('./cypress/fixtures/updateLeads.xlsx'); // Replace with your actual file path
 
 // Get the desired worksheet name or index
-const sheetName = 'leadsToBeUpdated'; // Replace with the sheet name or index (number)
+const sheetName = 'Data'; // Replace with the sheet name or index (number)
 
 // Read the worksheet data
 const worksheet = workbook.Sheets[sheetName];

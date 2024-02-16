@@ -15,7 +15,7 @@ Daily usage - Web Scrapper:
 3. Save the content of extracted_data.xlsx
 4. Adjust column K with the correct settings to generate the whatsapp link properly and send the messages to respective contacts
 
-Usage of Update Leads
+Usage of Update Leads after 30 days:
 
 1. Create an xlsx/excel file containing all the information from the leads that need to be updated
 2. Put the data inside auto-message/cypress/fixtures and replace updateLeads.xlsx with it, has to have the same name

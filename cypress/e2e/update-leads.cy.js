@@ -25,20 +25,18 @@ describe('update leads', () => {
       cy.fixture('transformed_data.txt').then(allResults => {
         let arrayData = JSON.parse(allResults)
         
-        cy.get(arrayData.slice(1)).each((innerArray) => {
+        cy.get(arrayData).each((innerArray) => {
           const leadNumber = innerArray[2] || '';
           const message = innerArray[9] || ''; 
-          
+          console.log(leadNumber)
+
           if (Number(leadNumber) !== NaN) {
             cy.wait(2000)
             cy.visit(`${baseUrl}/comercial/leads/${leadNumber}/administrar?lido=true`);
-            511442
-            cy.wait(5000)
+            cy.wait(7000)
             cy.get('.ajust-lista-acoes > li:nth-child(1) > a:nth-child(1) > i:nth-child(1)').should('be.visible').click();
             cy.get('#formularioPrincipalAnatocao > fieldset:nth-child(6) > div:nth-child(1) > div:nth-child(2) > textarea:nth-child(1)').type(message);
             cy.get('#salvarAnotacao').click()
-            const situationLeadButton = "#/34"
-            cy.get(situationLeadButton).click()
           }
         });
       });
