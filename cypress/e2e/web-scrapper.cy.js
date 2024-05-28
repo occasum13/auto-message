@@ -66,11 +66,11 @@ describe('scrap data', () => {
 
       cy.get('#listagem_informacoes > strong:nth-child(1)').then($el => {
         // Get the text content of the element
-        let numberOfContacts = 0
-        Number($el.text())>999?numberOfContacts = Number($el.text()):numberOfContacts = 999
+        
+        const numberOfContacts = Number($el.text());
         cy.log(`Number of contacts: ${numberOfContacts}`); // Log the value
         cy.get('#qtd').clear(); 
-        cy.get('#qtd').type(numberOfContacts);
+        cy.get('#qtd').type('999');
         cy.get('#formQtd > a').click();
       });
 
