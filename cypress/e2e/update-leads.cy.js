@@ -10,11 +10,6 @@ describe('update leads', () => {
   context('update leads', () => {
 
     it('process', () => {
-
-      cy.on('uncaught:exception', () => {
-        return false
-      })
-
       // Visits the website and login
       cy.visit(baseUrl);
       cy.get('#email').type(email);
@@ -24,18 +19,18 @@ describe('update leads', () => {
       // Iterates through the .txt to find leadNumbers registered and updates the leads
       cy.fixture('transformed_data.txt').then(allResults => {
         let arrayData = JSON.parse(allResults)
+        console.log(arrayData)
         
         cy.get(arrayData).each((innerArray) => {
           const leadNumber = innerArray[2] || '';
           const message = innerArray[9] || ''; 
-          console.log(leadNumber)
 
           if (Number(leadNumber) !== NaN) {
-            cy.wait(2000)
+            cy.wait(3000)
             cy.visit(`${baseUrl}/comercial/leads/${leadNumber}/administrar?lido=true`);
-            cy.wait(7000)
-            cy.get('.ajust-lista-acoes > li:nth-child(1) > a:nth-child(1) > i:nth-child(1)').should('be.visible').click();
-            cy.get('#formularioPrincipalAnatocao > fieldset:nth-child(6) > div:nth-child(1) > div:nth-child(2) > textarea:nth-child(1)').type(message);
+            cy.wait(10000)
+            cy.get('#goSituacao > div > div.box-acoes > div.listaAcoes > ul > li:nth-child(1) > a > i').should('be.visible').click();
+            cy.get('#form_interacao_descricao').type(message);
             cy.get('#salvarAnotacao').click()
           }
         });

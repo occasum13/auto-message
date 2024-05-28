@@ -12,6 +12,9 @@ module.exports = defineConfig({
 		videoCompression: 0,
 		retries: 0,
 		screenshotOnRunFailure: false,
+    experimentalMemoryManagement: true,
+    numTestsKeptInMemory:0,
+    pageLoadTimeout:120000,
 		specPattern: 'cypress/e2e/*.{feature,cy.{js,jsx,ts,tsx}}'
   },
 });

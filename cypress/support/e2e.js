@@ -16,5 +16,8 @@
 // Import commands.js using ES2015 syntax:
 import './commands'
 
+cy.on('uncaught:exception', () => {
+    return false
+  })
 // Alternatively you can use CommonJS syntax:
 // require('./commands')

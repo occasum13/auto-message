@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+
 require('dotenv').config()
 require('cypress-xpath')
 
@@ -53,13 +54,15 @@ describe('scrap data', () => {
       // Go to leads page and setup search
       cy.visit(`${baseUrl}/comercial/leads`);
       cy.get('#botaoBuscaListagem').click();
-      cy.get('input[type="checkbox"][name="q[999|idsituacao][]"][value="2"]').click();
+      // Seletor de filtro aguardando contato correto, liberar as duas abaixo
+      cy.get('label.checkbox:nth-child(4) > input:nth-child(1)').click();
       cy.get('button').contains('Buscar').click();
-
-      cy.get('#quantidadeComReserva').click();
+      // Abaixo está o filtro de leads com reserva.
+      // cy.get('#filtro-numeros > div:nth-child(3) > div > a').click();
       // cy.get('#quantidadeSemInteracao').click();
-      // cy.get('#quantidadeTotal').click();
-      cy.get('button').contains('Buscar').click();
+      //cy.get('#filtro-numeros > div:nth-child(1) > div > a').click();
+      // Acima está o filtro para todos os leads.
+      //cy.get('button').contains('Buscar').click();
 
       cy.get('#listagem_informacoes > strong:nth-child(1)').then($el => {
         // Get the text content of the element
@@ -100,11 +103,9 @@ describe('scrap data', () => {
         
         firstInvestment = firstInvestment[0].toUpperCase() + firstInvestment.slice(1);
 
-        
         // Get the lead number element
         const leadNumberElement = row.find('td:nth-child(2) > div > div > span');
         const leadNumberText = leadNumberElement.text().trim();
-
 
         // Get time in order to make a personalized greeting depending on hour
         // const timeDate = new Date();
@@ -129,7 +130,7 @@ describe('scrap data', () => {
             contactNumberText,
             '',
             '0',
-            `Tentando primeiro contato com o cliente.`,
+            'Tentando primeiro contato com o cliente.',
             `=HYPERLINK("https://api.whatsapp.com/send?phone=${contactNumberText}&text="&J2&"";"Enviar mensagem")`,
             '',
             '',
@@ -146,15 +147,20 @@ describe('scrap data', () => {
             ''
         ],];
 
-        allResults = allResults.concat(dataArray); 
-        cy.writeFile('./cypress/fixtures/extracted_data.txt', JSON.stringify(allResults), { encoding: 'utf8' })
-      }) 
+        allResults = allResults.concat(dataArray);
+        globalThis.allResults = allResults 
+        cy.wait(1)
+      }).then(() =>{        
+        cy.wait(5000)
+        console.log(globalThis.allResults)
+        cy.writeFile('./cypress/fixtures/extracted_data.txt', JSON.stringify(globalThis.allResults), { encoding: 'utf8' })
+      })
     });
   })
 
   context('update leads', () => {
 
-    it.skip('process', () => {
+    it('process', () => {
 
       cy.on('uncaught:exception', () => {
         return false
@@ -169,17 +175,17 @@ describe('scrap data', () => {
       // Iterates through the .txt to find leadNumbers registered and updates the leads
       cy.fixture('extracted_data.txt').then(allResults => {
         let arrayData = JSON.parse(allResults);
-        
         cy.get(arrayData.slice(2)).each((innerArray) => {
           const leadNumber = innerArray[2] || '';
           const message = innerArray[9] || ''; 
-          
+          console.log(leadNumber)
           if (Number(leadNumber) !== NaN) {
             cy.visit(`${baseUrl}/comercial/leads/${leadNumber}/administrar?lido=true`);
-            cy.get('.ajust-lista-acoes > li:nth-child(1) > a:nth-child(1) > i:nth-child(1)').should('be.visible').click();
-            cy.get('#formularioPrincipalAnatocao > fieldset:nth-child(6) > div:nth-child(1) > div:nth-child(2) > textarea:nth-child(1)').type(message);
-            cy.get('#salvarAnotacao').click();
+            cy.get('#goSituacao > div > div.box-acoes > div.listaAcoes > ul > li:nth-child(1) > a > i').should('be.visible').click();
+            cy.get('#form_interacao_descricao').type(message);
+            cy.get('#salvarAnotacao').click()
             cy.xpath('//*[@id="4"]').click();
+            cy.wait(1000)
           }
         });
       });
